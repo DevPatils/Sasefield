@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const Authrouter = express.Router();
 const User = require('../models/user.model');
 const jwt = require('jsonwebtoken');
 
@@ -13,7 +13,7 @@ const generateToken = (user) => {
 };
 
 // Signup Route
-router.post('/signup', async (req, res) => {
+Authrouter.post('/signup', async (req, res) => {
   const { firstName, lastName, email, password, role } = req.body;
 
   try {
@@ -40,11 +40,11 @@ router.post('/signup', async (req, res) => {
 });
 
 // Login Route
-router.post('/login', async (req, res) => {
+Authrouter.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }); // Fixed typo `A{ email }`
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
     const isMatch = await user.matchPassword(password);
@@ -66,4 +66,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router;
+module.exports = Authrouter;
