@@ -14,17 +14,27 @@ const generateToken = (user) => {
 
 // Signup Route
 router.post('/signup', async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { firstName, lastName, email, password, role } = req.body;
+
   try {
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: 'User already exists' });
 
-    const user = new User({ name, email, password, role });
+    const user = new User({ firstName, lastName, email, password, role });
     await user.save();
 
     const token = generateToken(user);
-    res.status(201).json({ token, user: { name: user.name, email: user.email, role: user.role } });
+    res.status(201).json({
+      token,
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Something went wrong' });
   }
 });
@@ -32,6 +42,7 @@ router.post('/signup', async (req, res) => {
 // Login Route
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'Invalid credentials' });
@@ -40,8 +51,17 @@ router.post('/login', async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
     const token = generateToken(user);
-    res.status(200).json({ token, user: { name: user.name, email: user.email, role: user.role } });
+    res.status(200).json({
+      token,
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 });
